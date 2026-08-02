@@ -1,0 +1,35 @@
+# Tag a version (no leading "v") and this attaches the three files Obsidian expects.
+#   npm version 0.2.0 && git push --follow-tags
+name: Release
+
+on:
+  push:
+    tags: ["*"]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Smoke test
+        run: node test/smoke.mjs
+      - name: Check the tag matches the manifest
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          MANIFEST=$(node -p "require('./manifest.json').version")
+          if [ "$TAG" != "$MANIFEST" ]; then
+            echo "Tag $TAG does not match manifest version $MANIFEST"; exit 1
+          fi
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF#refs/tags/}" \
+            --title "${GITHUB_REF#refs/tags/}" \
+            --notes "See CHANGELOG.md" \
+            main.js manifest.json styles.css

@@ -1,0 +1,9 @@
+node_modules/
+*.js.map
+.DS_Store
+
+# Plugin runtime state: XP, streak, badges. Never committed — it is the user's, not the plugin's.
+data.json
+
+# Obsidian's own local editor state if this folder is ever opened as a vault
+.obsidian/

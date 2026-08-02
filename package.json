@@ -1,0 +1,20 @@
+{
+  "name": "obsidian-study-familiar",
+  "version": "0.1.0",
+  "description": "An Obsidian study companion that rewards the act of studying and never the rating you give yourself.",
+  "main": "main.js",
+  "scripts": {
+    "test": "node test/smoke.mjs",
+    "version": "node version-bump.mjs && git add manifest.json versions.json"
+  },
+  "keywords": [
+    "obsidian-plugin",
+    "study",
+    "spaced-repetition",
+    "flashcards",
+    "gamification"
+  ],
+  "author": "Heidi Helena Andersén",
+  "license": "Apache-2.0",
+  "devDependencies": {}
+}
