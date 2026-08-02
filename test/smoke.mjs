@@ -34,7 +34,14 @@ class FakePlugin {
 const load = Module._load;
 Module._load = (request, ...rest) =>
   request === "obsidian"
-    ? { Plugin: FakePlugin, Notice: Fake, Modal: Fake, PluginSettingTab: Fake, Setting: Fake }
+    ? {
+        Plugin: FakePlugin,
+        Notice: Fake,
+        Modal: Fake,
+        PluginSettingTab: Fake,
+        Setting: Fake,
+        normalizePath: (p) => p.replace(/\\/g, "/").replace(/\/+/g, "/").replace(/^\/|\/$/g, ""),
+      }
     : load.call(Module, request, ...rest);
 
 const bundle = require(path.join(root, "main.js"));
@@ -64,7 +71,7 @@ function makePlugin() {
       getMarkdownFiles: () => files.map((f) => ({ path: f.path, basename: f.basename })),
       read: async () => head + body,
       modify: async (_f, t) => { written = t; },
-      process: async (_f, fn) => { written = fn(head + body); },
+      process: async (_f, fn) => { written = fn(head + body); return written; },
     },
     metadataCache: {
       on: () => ({}),
@@ -150,5 +157,15 @@ assert.equal(manifest.version, require(path.join(root, "package.json")).version,
   "manifest and package.json versions must agree");
 assert.ok(Object.keys(require(path.join(root, "versions.json"))).includes(manifest.version),
   "versions.json must map this version to a minAppVersion");
+
+// Folder settings default to the original hardcoded behaviour, and an empty value widens the
+// search to the whole vault rather than narrowing it to nothing.
+const f = makePlugin(); await f.onload();
+assert.equal(f.data.settings.conceptsFolder, "Concepts", "default keeps the original folder");
+assert.equal(f.concepts().length, 2, "default folder finds the concept notes");
+f.data.settings.conceptsFolder = "";
+assert.equal(f.concepts().length, 2, "an empty folder searches the whole vault");
+f.data.settings.conceptsFolder = "Nowhere";
+assert.equal(f.concepts().length, 0, "a folder with no notes finds none");
 
 console.log("smoke: all contracts hold");

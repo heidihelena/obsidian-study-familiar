@@ -39,6 +39,7 @@
 }
 
 .sf-bar-fill {
+  width: var(--sf-progress, 4%);
   height: 100%;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--interactive-accent), var(--sf-warm));

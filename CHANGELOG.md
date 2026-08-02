@@ -25,9 +25,13 @@ the same schema.
 - **Add Zotero link to this source.** Turns a Better BibTeX `citekey:` into `zotero://select/items/@key`,
   and refuses to guess when no citekey exists.
 - **English and Swedish** interface strings.
-- **Smoke test** covering the honesty rules, sprint behaviour, atomic writes and manifest validity.
+- **Configurable folders** for concept and source notes; empty means the whole vault.
+- **Smoke test** covering the honesty rules, sprint behaviour, atomic writes and manifest validity,
+  run in CI on every push and pull request along with a check that the committed bundle matches `src/`.
 
 ### Known limits
 
-- Assumes the vault schema described in the README; a vault without it sees an empty dashboard.
-- `isDesktopOnly: false` is a claim based on the API used, not on testing against a phone.
+- Reads the frontmatter schema described in the README; a vault without those keys sees an empty
+  dashboard. Folders are configurable, frontmatter keys are not.
+- `isDesktopOnly: false` is a claim based on the APIs used, not on testing against a phone.
+  Developed and used on macOS.

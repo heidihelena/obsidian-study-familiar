@@ -7,3 +7,4 @@ data.json
 
 # Obsidian's own local editor state if this folder is ever opened as a vault
 .obsidian/
+docs/frames/

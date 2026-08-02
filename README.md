@@ -2,6 +2,8 @@
 
 An Obsidian study companion that rewards the act of studying and never the rating you give yourself.
 
+![Study Familiar walkthrough](docs/study-familiar-walkthrough.gif)
+
 Most study gamification has an obvious failure mode: rate everything 5, feel great, learn nothing.
 This one pays the same XP for rating a concept 2 as for rating it 5, pays **more** for lowering a
 rating than for raising one, and has a badge — Honest Owl ⚖️ — for the first downgrade. No popup
@@ -10,11 +12,11 @@ established elsewhere, by explaining and by being tested.
 
 ## Status: personal plugin, not (yet) in the community catalogue
 
-Read this before installing. Study Familiar currently assumes a specific vault schema — concept
-notes in `Concepts/` with `type: concept`, `confidence`, `courses`, and source notes in `Sources/`
-with `status: confirmed`. In a vault without that schema it shows an empty dashboard and does
-nothing. Making the folder and field names configurable is the work standing between this and a
-community-catalogue submission.
+Read this before installing. Study Familiar reads a specific note schema: concept notes carrying
+`type: concept` in their frontmatter, with `confidence`, `last_reviewed` and optionally `courses`
+and `prerequisites`; source notes carrying `type: source` and `status`. The folders are
+configurable (and can be the whole vault), but the frontmatter keys are not — in a vault that does
+not use them, the dashboard will be empty and the plugin will do nothing.
 
 Install with [BRAT](https://github.com/TfTHacker/obsidian42-brat): add
 `heidihelena/obsidian-study-familiar` as a beta plugin. Or copy `main.js`, `manifest.json` and
@@ -33,6 +35,17 @@ Settings → Community plugins.
 | **Suggest links for this note** | Finds concepts mentioned in prose but not linked; you tick which are real references |
 | **Add Zotero link to this source** | Turns a Better BibTeX `citekey:` into a clickable `zotero://select/items/@key` |
 | **Feathers earned** | Eleven badges, each tied to a real study behaviour |
+
+## Settings
+
+| Setting | Default | What it does |
+|---|---|---|
+| Concepts folder | `Concepts` | Where concept notes live. Empty means the whole vault; `type: concept` still does the real filtering. |
+| Sources folder | `Sources` | Where source notes live, for the unconfirmed-source quest. |
+| Language | English | English or Swedish interface. |
+| Daily goal | 3 | How many concepts a quest asks for. Lower it before raising it. |
+| Sprint / break length | 25 / 5 min | Focused block, then time away from the screen. |
+| Status bar, Celebrations | on | Turn celebrations off during exam week if popups break concentration. |
 
 ## The design rules
 

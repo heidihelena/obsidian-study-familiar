@@ -15,6 +15,32 @@ export class StudyFamiliarSettings extends PluginSettingTab {
     const s = this.plugin.data.settings;
 
     new Setting(containerEl)
+      .setName("Concepts folder")
+      .setDesc("Where concept notes live. Notes still need `type: concept` in their frontmatter. Leave empty to search the whole vault.")
+      .addText((t) =>
+        t
+          .setPlaceholder("Concepts")
+          .setValue(s.conceptsFolder)
+          .onChange(async (v) => {
+            s.conceptsFolder = v;
+            await this.plugin.save();
+          }),
+      );
+
+    new Setting(containerEl)
+      .setName("Sources folder")
+      .setDesc("Where source notes live, for the unconfirmed-source quest. Notes still need `type: source`. Leave empty to search the whole vault.")
+      .addText((t) =>
+        t
+          .setPlaceholder("Sources")
+          .setValue(s.sourcesFolder)
+          .onChange(async (v) => {
+            s.sourcesFolder = v;
+            await this.plugin.save();
+          }),
+      );
+
+    new Setting(containerEl)
       .setName("Language")
       .setDesc("Interface language for the familiar. Swedish for exam-language study, English otherwise.")
       .addDropdown((d) =>
@@ -88,7 +114,7 @@ export class StudyFamiliarSettings extends PluginSettingTab {
         }),
       );
 
-    containerEl.createEl("h3", { text: "How scoring works" });
+    new Setting(containerEl).setName("How scoring works").setHeading();
     containerEl.createEl("p", { cls: "sf-sub" }).setText(
       "XP is paid for the act of studying, never for the rating you give. Rating a concept 2 pays " +
         "the same as rating it 5, and lowering a rating pays more than raising one. Nothing here " +

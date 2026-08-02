@@ -29,7 +29,9 @@ export class DashboardModal extends Modal {
 
     const bar = contentEl.createDiv({ cls: "sf-bar" });
     const span = lvl.nextAt ? (p.data.xp - lvl.at) / (lvl.nextAt - lvl.at) : 1;
-    bar.createDiv({ cls: "sf-bar-fill" }).style.width = `${Math.max(4, Math.min(100, span * 100))}%`;
+    // The width is data, not styling: hand it to CSS as a variable rather than setting style here.
+    bar.createDiv({ cls: "sf-bar-fill" })
+      .style.setProperty("--sf-progress", `${Math.max(4, Math.min(100, span * 100))}%`);
 
     if (p.data.streak) {
       contentEl.createDiv({ cls: "sf-streak", text: `🔥 ${fill(p.t("streak_day"), { n: p.data.streak })}` });

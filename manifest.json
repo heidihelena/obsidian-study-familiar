@@ -2,9 +2,9 @@
   "id": "study-familiar",
   "name": "Study Familiar",
   "version": "0.1.0",
-  "minAppVersion": "1.4.0",
+  "minAppVersion": "1.6.0",
   "description": "A small owl that lives in your vault: tracks what needs studying, lets you rate concepts in one keystroke, and cheers for the work rather than for the score.",
-  "author": "Heidi Helena Andersén",
+  "author": "Heidi Helena Anders\u00e9n",
   "authorUrl": "https://github.com/heidihelena",
   "isDesktopOnly": false
 }
