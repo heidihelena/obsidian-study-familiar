@@ -56,16 +56,23 @@ learning — a bell on its own only measures sitting. Stopping early gives no XP
 
 ## Development
 
-Plain JavaScript against the Obsidian API: no build step, no dependencies, so `main.js` is the
-source. Edit it and reload the plugin.
+TypeScript, bundled with esbuild. `main.js` is a build artifact but is committed, because BRAT and
+manual installs read it straight from the repository root.
 
 ```bash
-npm test
+npm install
+npm run build      # typecheck, then bundle src/main.ts to main.js
+npm run dev        # watch mode
+npm test           # build, then run the contract tests
 ```
 
-The smoke test loads `main.js` against a stubbed Obsidian API and asserts the two honesty rules,
-sprint behaviour, atomic link writing, and manifest correctness — so a release cannot ship a broken
-listing, or a plugin that has quietly started rewarding self-flattery.
+Source layout: `src/main.ts` (plugin and commands), `src/views.ts` (modals), `src/settings.ts`,
+`src/constants.ts` (XP table, levels, badges), `src/i18n.ts` (English and Swedish strings),
+`src/util.ts`, `src/types.ts`.
+
+The smoke test loads the built bundle against a stubbed Obsidian API and asserts the two honesty
+rules, sprint behaviour, atomic link writing, and manifest correctness — so a release cannot ship a
+broken listing, or a plugin that has quietly started rewarding self-flattery.
 
 ## Licence
 

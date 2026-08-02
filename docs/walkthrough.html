@@ -1,0 +1,1171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Study Familiar walkthrough</title>
+  <style>
+    :root {
+      color-scheme: light;
+      /* Obsidian-ish light chrome, warmed slightly so the owl does not sit on clinical grey. */
+      --outside: #24212C;
+      --paper: #FAF8F5;
+      --pane: #FFFDFA;
+      --sidebar: #F2EFF4;
+      --ink: #1C1A22;
+      --muted: #6B6578;
+      --faint: #948EA2;
+      --hairline: #E5E0EA;
+      --field: #F5F2F8;
+      --accent: #6E58B8;          /* --interactive-accent */
+      --accent-soft: #EFEAF9;
+      --warm: #B8860B;            /* --sf-warm, darkened for AA on paper */
+      --teal: #14776E;            /* Concepts */
+      --violet: #7B5FBE;          /* Epistemic */
+      --amber: #A97B08;           /* Sources */
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      min-width: 1280px;
+      height: 100%;
+      min-height: 720px;
+      margin: 0;
+      overflow: hidden;
+      background: var(--outside);
+      font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    body { display: grid; place-items: center; }
+
+    .stage {
+      position: relative;
+      width: 1280px;
+      height: 720px;
+      overflow: hidden;
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    /* ---------------------------------------------------------------- header */
+    .film-header {
+      display: flex;
+      width: 1160px;
+      height: 42px;
+      margin: 16px auto 8px;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .16em;
+    }
+
+    .brand-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    /* ---------------------------------------------------------------- window */
+    .window {
+      position: relative;
+      width: 1160px;
+      height: 588px;
+      margin: 0 auto;
+      overflow: hidden;
+      background: var(--pane);
+      border: 1px solid var(--hairline);
+      border-radius: 12px;
+    }
+
+    .titlebar {
+      display: flex;
+      height: 38px;
+      padding: 0 15px;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      background: #F1EEF4;
+      border-bottom: 1px solid var(--hairline);
+      font-size: 12px;
+    }
+
+    .dots { display: flex; gap: 6px; }
+
+    .dots span {
+      width: 8px;
+      height: 8px;
+      background: #C9C3D2;
+      border-radius: 50%;
+    }
+
+    .tab {
+      margin-left: 10px;
+      padding: 3px 10px;
+      color: var(--ink);
+      background: var(--pane);
+      border: 1px solid var(--hairline);
+      border-radius: 6px;
+      font-size: 11.5px;
+    }
+
+    .workspace {
+      display: grid;
+      height: 524px;
+      grid-template-columns: 232px minmax(0, 1fr);
+    }
+
+    /* ---------------------------------------------------------------- explorer */
+    .explorer {
+      padding: 16px 12px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--hairline);
+    }
+
+    .explorer-title {
+      margin: 0 6px 10px;
+      color: var(--faint);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .15em;
+    }
+
+    /* Tinted fill plus a solid spine: the label stays ink, so colour is a second
+       channel rather than the only one carrying the folder identity. */
+    .folder {
+      display: flex;
+      height: 28px;
+      margin-bottom: 3px;
+      padding: 0 9px;
+      align-items: center;
+      gap: 7px;
+      color: var(--ink);
+      border-left: 3px solid;
+      border-radius: 3px 6px 6px 3px;
+      font-size: 12.5px;
+      font-weight: 650;
+    }
+
+    .folder .glyph { font-size: 10px; opacity: .8; }
+
+    .folder.concepts { background: color-mix(in srgb, var(--teal) 13%, var(--pane)); border-left-color: var(--teal); }
+    .folder.epistemic { background: color-mix(in srgb, var(--violet) 13%, var(--pane)); border-left-color: var(--violet); }
+    .folder.sources { background: color-mix(in srgb, var(--amber) 15%, var(--pane)); border-left-color: var(--amber); }
+
+    .folder.concepts .glyph { color: var(--teal); }
+    .folder.epistemic .glyph { color: var(--violet); }
+    .folder.sources .glyph { color: var(--amber); }
+
+    .file {
+      display: flex;
+      height: 26px;
+      margin-left: 14px;
+      padding: 0 8px;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      border-radius: 5px;
+      font-size: 12px;
+    }
+
+    .file .doc {
+      width: 9px;
+      height: 11px;
+      border: 1px solid currentColor;
+      border-radius: 1px;
+      opacity: .65;
+    }
+
+    .file.active {
+      color: var(--ink);
+      background: #E7E1EE;
+      font-weight: 600;
+    }
+
+    .explorer-spacer { height: 10px; }
+
+    /* ---------------------------------------------------------------- note pane */
+    .pane {
+      position: relative;
+      min-width: 0;
+      padding: 26px 62px 0 54px;
+      background: var(--pane);
+    }
+
+    .note {
+      position: absolute;
+      top: 26px;
+      left: 54px;
+      width: 700px;
+    }
+
+    .props {
+      margin-bottom: 20px;
+      padding: 9px 12px 10px;
+      background: var(--field);
+      border: 1px solid var(--hairline);
+      border-radius: 8px;
+    }
+
+    .prop {
+      display: flex;
+      padding: 2.5px 0;
+      align-items: baseline;
+      gap: 10px;
+      font-size: 11.5px;
+      line-height: 1.5;
+    }
+
+    .prop-key {
+      width: 108px;
+      flex: none;
+      color: var(--faint);
+      font-family: var(--mono);
+      font-size: 10.5px;
+    }
+
+    .prop-val { color: var(--muted); }
+    .prop-val .link { color: var(--accent); }
+
+    .prop-num {
+      padding: 0 6px;
+      color: var(--ink);
+      background: var(--pane);
+      border: 1px solid var(--hairline);
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-weight: 700;
+    }
+
+    .note h1 {
+      margin: 0 0 6px;
+      font-size: 30px;
+      font-weight: 620;
+      letter-spacing: -.025em;
+    }
+
+    .note h2 {
+      margin: 14px 0 8px;
+      color: var(--faint);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .note p {
+      margin: 0 0 9px;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.62;
+    }
+
+    .note p .link { color: var(--accent); }
+    .note p em { color: var(--ink); font-style: italic; }
+
+    /* ---------------------------------------------------------------- status bar */
+    .statusbar {
+      display: flex;
+      height: 26px;
+      padding: 0 14px;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--faint);
+      background: #F1EEF4;
+      border-top: 1px solid var(--hairline);
+      font-size: 11.5px;
+    }
+
+    .sf-status {
+      padding: 1px 8px;
+      color: var(--ink);
+      border-radius: 5px;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+    }
+
+    /* ---------------------------------------------------------------- overlays */
+    .scrim {
+      position: absolute;
+      z-index: 5;
+      inset: 38px 0 26px 0;
+      background: rgba(28, 26, 34, .26);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .palette {
+      position: absolute;
+      z-index: 8;
+      top: 78px;
+      left: 50%;
+      width: 520px;
+      overflow: hidden;
+      background: var(--pane);
+      border: 1px solid var(--hairline);
+      border-radius: 10px;
+      box-shadow: 0 18px 44px rgba(28, 26, 34, .16);
+      opacity: 0;
+    }
+
+    .palette-input {
+      padding: 12px 15px;
+      color: var(--ink);
+      border-bottom: 1px solid var(--hairline);
+      font-size: 14px;
+    }
+
+    .palette-caret {
+      display: inline-block;
+      width: 1px;
+      height: 15px;
+      margin-left: 1px;
+      background: var(--accent);
+      transform: translateY(2px);
+    }
+
+    .palette-row {
+      display: flex;
+      padding: 8px 15px;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    .palette-row.hit {
+      color: var(--ink);
+      background: var(--accent-soft);
+      font-weight: 600;
+    }
+
+    .palette-row .plug { color: var(--faint); font-weight: 400; }
+
+    /* ---------------------------------------------------------------- modal */
+    .modal {
+      position: absolute;
+      z-index: 9;
+      left: 50%;
+      background: var(--pane);
+      border: 1px solid var(--hairline);
+      border-radius: 11px;
+      box-shadow: 0 22px 54px rgba(28, 26, 34, .18);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .modal h2 {
+      margin: 0;
+      font-size: 19px;
+      font-weight: 620;
+      letter-spacing: -.02em;
+    }
+
+    .sf-sub {
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    /* rate modal */
+    .rate-modal {
+      top: 92px;
+      width: 552px;
+      padding: 22px 24px 20px;
+    }
+
+    .sf-rate-title {
+      margin: 12px 0 3px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .sf-scale {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 14px;
+    }
+
+    .sf-scale-btn {
+      display: flex;
+      width: 100%;
+      padding: 8px 11px;
+      align-items: center;
+      gap: 11px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      text-align: left;
+    }
+
+    .sf-scale-n {
+      min-width: 22px;
+      color: var(--accent);
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .sf-scale-label { color: var(--ink); font-size: 13.5px; }
+
+    /* The ring marks the rating already on the note, which is what makes the
+       downgrade legible: 4 is where it stood, 2 is where it lands. */
+    .sf-scale-btn.sf-current { border-color: var(--accent); }
+
+    .sf-scale-btn.hover { background: var(--field); }
+
+    .sf-scale-btn.picked {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+    }
+
+    /* celebration cards */
+    .card {
+      top: 158px;
+      width: 486px;
+      padding: 26px 30px 22px;
+      text-align: center;
+    }
+
+    .card.sprint-card { top: 116px; width: 560px; }
+
+    .sf-big {
+      font-size: 52px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .card h2 { margin-bottom: 6px; }
+
+    .sf-recall {
+      margin: 10px auto 8px;
+      max-width: 430px;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .sf-actions {
+      display: flex;
+      margin-top: 16px;
+      gap: 8px;
+    }
+
+    .sf-actions.sf-center { justify-content: center; }
+
+    .btn {
+      padding: 6px 14px;
+      color: var(--ink);
+      background: var(--field);
+      border: 1px solid var(--hairline);
+      border-radius: 7px;
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .btn.mod-cta {
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* dashboard */
+    .dash {
+      top: 30px;
+      width: 620px;
+      padding: 20px 24px 18px;
+      text-align: left;
+    }
+
+    .sf-head {
+      display: flex;
+      margin-bottom: 7px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sf-owl { font-size: 32px; line-height: 1; }
+    .sf-level { font-size: 18px; font-weight: 640; }
+
+    .sf-bar {
+      height: 8px;
+      margin: 4px 0 12px;
+      overflow: hidden;
+      background: var(--hairline);
+      border-radius: 999px;
+    }
+
+    .sf-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--warm));
+      border-radius: 999px;
+    }
+
+    .sf-streak { margin-bottom: 8px; font-size: 13px; }
+
+    .sf-sprint { display: flex; margin: 4px 0 4px; align-items: center; gap: 9px; }
+
+    .dash h3 {
+      margin: 13px 0 6px;
+      color: var(--faint);
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .sf-quest-row {
+      display: flex;
+      margin-bottom: 3px;
+      padding: 5px 9px;
+      align-items: center;
+      gap: 9px;
+      background: var(--field);
+      border-radius: 8px;
+      font-size: 12.8px;
+    }
+
+    .sf-quest-row.sf-done {
+      color: var(--muted);
+      text-decoration: line-through;
+      text-decoration-color: var(--hairline);
+    }
+
+    .sf-check {
+      width: 14px;
+      color: var(--accent);
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .sf-count {
+      margin-left: auto;
+      color: var(--faint);
+      font-size: 11.5px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sf-card {
+      display: flex;
+      margin-bottom: 4px;
+      padding: 7px 9px;
+      align-items: center;
+      gap: 11px;
+      border: 1px solid var(--hairline);
+      border-radius: 10px;
+    }
+
+    .sf-card-title { margin-bottom: 1px; font-size: 13px; font-weight: 620; }
+    .sf-card .sf-sub { font-size: 11.5px; }
+
+    .sf-card .sf-actions { margin: 0 0 0 auto; }
+    .sf-card .btn { padding: 4px 11px; font-size: 11.5px; }
+
+    .sf-badges { display: flex; flex-wrap: wrap; gap: 5px; }
+
+    .sf-badge {
+      display: inline-flex;
+      padding: 3px 9px;
+      align-items: center;
+      gap: 5px;
+      background: var(--field);
+      border: 1px solid var(--hairline);
+      border-radius: 999px;
+      font-size: 11.8px;
+    }
+
+    /* notice */
+    .notice {
+      position: absolute;
+      z-index: 12;
+      top: 52px;
+      right: 18px;
+      display: flex;
+      width: 366px;
+      padding: 12px 14px;
+      align-items: flex-start;
+      gap: 9px;
+      background: var(--pane);
+      border: 1px solid var(--hairline);
+      border-left: 3px solid var(--accent);
+      border-radius: 9px;
+      box-shadow: 0 12px 30px rgba(28, 26, 34, .13);
+      opacity: 0;
+    }
+
+    .sf-notice-icon { font-size: 16px; line-height: 1.25; }
+
+    .sf-notice-text {
+      color: var(--ink);
+      font-size: 12.8px;
+      line-height: 1.45;
+    }
+
+    .xp-gain {
+      display: inline-block;
+      margin-left: 4px;
+      color: var(--warm);
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* the 10-vs-15 ledger */
+    .xp-compare {
+      position: absolute;
+      z-index: 11;
+      bottom: 42px;
+      left: 288px;
+      width: 268px;
+      padding: 10px 12px;
+      background: var(--pane);
+      border: 1px solid var(--hairline);
+      border-radius: 9px;
+      box-shadow: 0 10px 26px rgba(28, 26, 34, .1);
+      opacity: 0;
+    }
+
+    .xc-title {
+      margin-bottom: 6px;
+      color: var(--faint);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .xc-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 3px 0;
+      color: var(--muted);
+      font-size: 12.2px;
+    }
+
+    .xc-n { font-variant-numeric: tabular-nums; font-weight: 700; }
+
+    .xc-row.xc-more { color: var(--ink); }
+    .xc-row.xc-more .xc-n { color: var(--warm); }
+
+    .xc-bar {
+      height: 4px;
+      margin-top: 4px;
+      background: var(--hairline);
+      border-radius: 999px;
+    }
+
+    .xc-bar i { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+    .xc-row.xc-more + .xc-bar i { background: var(--warm); }
+
+    /* cursor */
+    .cursor {
+      position: absolute;
+      z-index: 20;
+      top: 0;
+      left: 0;
+      width: 17px;
+      height: 22px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .cursor svg { width: 100%; height: 100%; }
+
+    /* ---------------------------------------------------------------- caption */
+    .caption {
+      display: flex;
+      width: 1160px;
+      height: 56px;
+      margin: 0 auto;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+      text-align: center;
+      font-size: 14.5px;
+      font-weight: 600;
+      opacity: 0;
+    }
+
+    .caption .dim { color: var(--muted); font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <header class="film-header">
+      <div class="brand"><span class="brand-dot"></span>STUDY FAMILIAR</div>
+      <div>An Obsidian study companion · XP for the act of studying, never for the rating</div>
+    </header>
+
+    <section class="window" aria-label="Stylised Obsidian window running the Study Familiar plugin">
+      <div class="titlebar">
+        <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
+        <span>StudyVault</span>
+        <span class="tab" id="tab">Meios</span>
+      </div>
+
+      <div class="workspace">
+        <aside class="explorer">
+          <p class="explorer-title">FILES</p>
+          <div class="folder concepts"><span class="glyph">▾</span><span>Concepts</span></div>
+          <div class="file" id="file-mendel"><span class="doc"></span><span>Mendels lagar</span></div>
+          <div class="file" id="file-meios"><span class="doc"></span><span>Meios</span></div>
+          <div class="file"><span class="doc"></span><span>Mitos</span></div>
+          <div class="file"><span class="doc"></span><span>Rekombination</span></div>
+          <div class="explorer-spacer"></div>
+          <div class="folder epistemic"><span class="glyph">▸</span><span>Epistemic</span></div>
+          <div class="explorer-spacer"></div>
+          <div class="folder sources"><span class="glyph">▸</span><span>Sources</span></div>
+          <div class="file"><span class="doc"></span><span>src-griffiths-genetic-analysis</span></div>
+        </aside>
+
+        <main class="pane">
+          <article class="note" id="note-meios">
+            <div class="props">
+              <div class="prop"><span class="prop-key">type</span><span class="prop-val">concept</span></div>
+              <div class="prop"><span class="prop-key">title</span><span class="prop-val">Meios</span></div>
+              <div class="prop"><span class="prop-key">courses</span><span class="prop-val">Genetik · LIFE Gener och ärftlighet</span></div>
+              <div class="prop"><span class="prop-key">prerequisites</span><span class="prop-val"><span class="link">kromosom</span>, <span class="link">mitos</span>, <span class="link">dna-replikation</span></span></div>
+              <div class="prop"><span class="prop-key">confidence</span><span class="prop-val"><span class="prop-num" id="conf-meios">0</span></span></div>
+              <div class="prop"><span class="prop-key">last_reviewed</span><span class="prop-val" id="seen-meios">—</span></div>
+            </div>
+            <h1>Meios</h1>
+            <h2>Core</h2>
+            <p class="line">Meios är två på varandra följande delningar efter en enda DNA-replikation, som ger fyra haploida celler (2n → n) med nya allelkombinationer.</p>
+            <p class="line">Reduktionen sker i meios I, där <em>homologa</em> <span class="link">kromosomer</span> separeras; meios II liknar en <span class="link">mitos</span> och separerar systerkromatiderna.</p>
+            <p class="line">Meiosen är den fysiska förklaringen till <span class="link">Mendels lagar</span>: segregation sker i anafas I, oberoende sortering vid metafas I.</p>
+          </article>
+
+          <article class="note" id="note-mendel">
+            <div class="props">
+              <div class="prop"><span class="prop-key">type</span><span class="prop-val">concept</span></div>
+              <div class="prop"><span class="prop-key">title</span><span class="prop-val">Mendels lagar</span></div>
+              <div class="prop"><span class="prop-key">courses</span><span class="prop-val">LIFE Gener och ärftlighet · Genetik</span></div>
+              <div class="prop"><span class="prop-key">prerequisites</span><span class="prop-val"><span class="link">allel</span>, <span class="link">meios</span></span></div>
+              <div class="prop"><span class="prop-key">confidence</span><span class="prop-val"><span class="prop-num" id="conf-mendel">4</span></span></div>
+              <div class="prop"><span class="prop-key">last_reviewed</span><span class="prop-val" id="seen-mendel">2026-07-19</span></div>
+            </div>
+            <h1>Mendels lagar</h1>
+            <h2>Core</h2>
+            <p>Mendels två lagar säger (1) att de två <span class="link">allelerna</span> i ett lokus separerar från varandra när gameter bildas, så att varje gamet får exakt en — <em>segregationslagen</em>.</p>
+            <p>Och (2) att alleler i olika lokus fördelas oberoende av varandra — <em>lagen om oberoende sortering</em>.</p>
+            <p>Båda är direkta konsekvenser av hur <span class="link">kromosomerna</span> beter sig i <span class="link">meios I</span>: segregation i anafas I, oberoende sortering vid metafas I.</p>
+          </article>
+        </main>
+      </div>
+
+      <div class="statusbar">
+        <span>Concepts/<span id="sb-file">Meios</span>.md</span>
+        <span class="sf-status" id="sf-status">🦉 Egg · 0 XP</span>
+      </div>
+
+      <div class="scrim" id="scrim"></div>
+
+      <div class="palette" id="palette">
+        <div class="palette-input"><span id="palette-query">Rate this concept</span><span class="palette-caret"></span></div>
+        <div class="palette-row hit"><span id="palette-hit">Rate this concept</span><span class="plug">Study Familiar</span></div>
+        <div class="palette-row"><span id="palette-alt">What should I study now?</span><span class="plug">Study Familiar</span></div>
+        <div class="palette-row"><span>Open the familiar</span><span class="plug">Study Familiar</span></div>
+      </div>
+
+      <section class="modal rate-modal" id="rate-modal" aria-label="Rate this concept">
+        <h2 id="rate-title">Meios</h2>
+        <div class="sf-rate-title">How well can you explain this — without notes?</div>
+        <div class="sf-sub">Your call, not the owl's. This number only helps if it is honest.</div>
+        <div class="sf-scale">
+          <div class="sf-scale-btn"><span class="sf-scale-n">1</span><span class="sf-scale-label">Never seen it work</span></div>
+          <div class="sf-scale-btn"><span class="sf-scale-n">2</span><span class="sf-scale-label">Recognise it, cannot rebuild it</span></div>
+          <div class="sf-scale-btn"><span class="sf-scale-n">3</span><span class="sf-scale-label">Can explain the gist</span></div>
+          <div class="sf-scale-btn"><span class="sf-scale-n">4</span><span class="sf-scale-label">Can explain it and the boundaries</span></div>
+          <div class="sf-scale-btn"><span class="sf-scale-n">5</span><span class="sf-scale-label">Could teach it to someone else</span></div>
+        </div>
+      </section>
+
+      <section class="modal card" id="badge-card" aria-label="Feather earned">
+        <div class="sf-big" id="badge-big">⚖️</div>
+        <h2>Honest Owl</h2>
+        <div class="sf-sub">Lowered a rating. The hardest and most useful move there is.</div>
+      </section>
+
+      <section class="modal card sprint-card" id="sprint-card" aria-label="Sprint done">
+        <div class="sf-big" id="sprint-big">⏳</div>
+        <h2>Sprint done — 25 minutes of real work.</h2>
+        <div class="sf-recall">Before the break: what are the three things you could now explain without notes? Say them out loud, then rate one.</div>
+        <div class="sf-sub">Take 5 minutes away from the screen. Walking beats scrolling for what happens next.</div>
+        <div class="sf-actions sf-center">
+          <span class="btn mod-cta">Rate a concept</span>
+          <span class="btn">Not now</span>
+        </div>
+      </section>
+
+      <section class="modal dash" id="dash" aria-label="The familiar">
+        <div class="sf-head">
+          <span class="sf-owl">🦉</span>
+          <div>
+            <div class="sf-level">Fledgling</div>
+            <div class="sf-sub">85 XP · 95 XP to Branch Owl</div>
+          </div>
+        </div>
+        <div class="sf-bar"><div class="sf-bar-fill" style="width: 21%"></div></div>
+        <div class="sf-streak">🔥 Day 4 in a row.</div>
+
+        <div class="sf-sprint"><span class="btn mod-cta">⏳ Study sprint · 25 min</span></div>
+
+        <h3>Today's quest</h3>
+        <div class="sf-quest-row sf-done"><span class="sf-check">✓</span><span>Rate 3 concepts you have never rated</span><span class="sf-count">3/3</span></div>
+        <div class="sf-quest-row"><span class="sf-check">○</span><span>Revisit 2 concepts you have not seen in two weeks</span><span class="sf-count">1/2</span></div>
+        <div class="sf-quest-row sf-done"><span class="sf-check">✓</span><span>Do one focused sprint</span><span class="sf-count">1/1</span></div>
+
+        <h3>What to study now</h3>
+        <div class="sf-card">
+          <div>
+            <div class="sf-card-title">Mendels lagar</div>
+            <div class="sf-sub">confidence 2 · 7 concepts rest on it</div>
+          </div>
+          <div class="sf-actions"><span class="btn">Open</span><span class="btn mod-cta">Rate</span></div>
+        </div>
+        <div class="sf-card">
+          <div>
+            <div class="sf-card-title">Kromosom</div>
+            <div class="sf-sub">never rated · never reviewed · 5 concepts rest on it</div>
+          </div>
+          <div class="sf-actions"><span class="btn">Open</span><span class="btn mod-cta">Rate</span></div>
+        </div>
+        <div class="sf-card">
+          <div>
+            <div class="sf-card-title">Meios</div>
+            <div class="sf-sub">confidence 2 · 3 concepts rest on it</div>
+          </div>
+          <div class="sf-actions"><span class="btn">Open</span><span class="btn mod-cta">Rate</span></div>
+        </div>
+
+        <h3>Feathers earned</h3>
+        <div class="sf-badges">
+          <span class="sf-badge">🪶 First Flight</span>
+          <span class="sf-badge">⚖️ Honest Owl</span>
+          <span class="sf-badge">🔥 Steady Wing</span>
+          <span class="sf-badge">⏳ First Sprint</span>
+        </div>
+      </section>
+
+      <div class="notice" id="notice">
+        <span class="sf-notice-icon" id="notice-icon">🦉</span>
+        <span class="sf-notice-text"><span id="notice-text"></span><span class="xp-gain" id="notice-xp"></span></span>
+      </div>
+
+      <aside class="xp-compare" id="xp-compare">
+        <div class="xc-title">What the owl paid</div>
+        <div class="xc-row"><span>Rate a concept</span><span class="xc-n">+10 XP</span></div>
+        <div class="xc-bar"><i style="width: 66%"></i></div>
+        <div class="xc-row xc-more"><span>Lower a rating</span><span class="xc-n">+15 XP</span></div>
+        <div class="xc-bar"><i style="width: 100%"></i></div>
+      </aside>
+
+      <div class="cursor" id="cursor" aria-hidden="true">
+        <svg viewBox="0 0 17 22">
+          <path d="M1.4 1.2 15 12.4l-5.9.6 3.2 6.6-2.6 1.3-3.2-6.6-4.1 4.2Z"
+                fill="#1C1A22" stroke="#FFFDFA" stroke-width="1.2" stroke-linejoin="round"></path>
+        </svg>
+      </div>
+    </section>
+
+    <div class="caption" id="caption" aria-live="polite"></div>
+  </div>
+
+  <script>
+    (() => {
+      /* ------------------------------------------------------------------ helpers */
+      const q = (id) => document.getElementById(id);
+      const clamp = (v, min = 0, max = 1) => Math.min(max, Math.max(min, v));
+      const smooth = (v) => { const x = clamp(v); return x * x * (3 - 2 * x); };
+      const appear = (t, start, dur = 300) => smooth((t - start) / dur);
+      const between = (t, inAt, outAt, dur = 300) =>
+        Math.min(smooth((t - inAt) / dur), 1 - smooth((t - outAt) / dur));
+      // easeOutBack, matching the shape of the plugin's own sf-pop keyframe.
+      const back = (p) => {
+        const x = clamp(p) - 1;
+        return 1 + 2.70158 * x * x * x + 1.70158 * x * x;
+      };
+
+      const DURATION = 24000;
+
+      /* Every beat lives here, so the film can be re-cut without touching render(). */
+      const B = {
+        fadeIn: 0,
+        lines: 250,
+        palette1In: 1300, palette1Out: 2300,
+        rate1In: 2550, rate1Out: 5600,
+        cursor1From: 3800, cursor1To: 4500,
+        hover1: 4500, pick1: 5200,
+        rated1: 5900,
+        notice1In: 5950, notice1Out: 8100,
+        swap: 8400,
+        rate2In: 9000, rate2Out: 11300,
+        cursor2From: 9800, cursor2To: 10400,
+        hover2: 10400, pick2: 10900,
+        rated2: 11550,
+        notice2In: 11600, notice2Out: 14100,
+        badgeIn: 11950, badgeOut: 13900,
+        compareIn: 12000, compareOut: 14100,
+        palette2In: 14300, palette2Out: 15150,
+        sprintStart: 15400,
+        notice3In: 15450, notice3Out: 17500,
+        sprintEnd: 17900,
+        sprintCardIn: 18000, sprintCardOut: 20500,
+        awarded: 20400,
+        dashIn: 20700,
+        fadeOut: 23600
+      };
+
+      const stage = q("stage");
+      const caption = q("caption");
+      const scrim = q("scrim");
+      const palette = q("palette");
+      const rateModal = q("rate-modal");
+      const badgeCard = q("badge-card");
+      const sprintCard = q("sprint-card");
+      const dash = q("dash");
+      const notice = q("notice");
+      const compare = q("xp-compare");
+      const cursor = q("cursor");
+      const status = q("sf-status");
+      const noteMeios = q("note-meios");
+      const noteMendel = q("note-mendel");
+      const scaleBtns = [...rateModal.querySelectorAll(".sf-scale-btn")];
+      const lines = [...noteMeios.querySelectorAll(".line")];
+
+      const setFade = (el, amount, px = 6) => {
+        const v = clamp(amount);
+        el.style.opacity = String(v);
+        el.style.transform = `translateY(${(1 - v) * px}px)`;
+      };
+
+      const setCentred = (el, amount, px = 8) => {
+        const v = clamp(amount);
+        el.style.opacity = String(v);
+        el.style.transform = `translate(-50%, ${(1 - v) * px}px)`;
+      };
+
+      /* Cursor path: a short arc into the "2" row, so the click reads as a choice
+         rather than a teleport. Coordinates are window-relative. */
+      const CURSOR_REST = { x: 690, y: 300 };
+      const CURSOR_TARGET = { x: 372, y: 351 };
+
+      /* ------------------------------------------------------------------ render */
+      const render = (raw) => {
+        const t = clamp(raw, 0, DURATION);
+
+        // global fade, so the loop seam is a dissolve rather than a jump cut
+        stage.style.opacity = String(Math.min(appear(t, B.fadeIn, 350), 1 - smooth((t - B.fadeOut) / 400)));
+
+        // ---------------------------------------------------------------- note pane
+        const onMendel = t >= B.swap;
+        const swapAmount = smooth((t - B.swap) / 380);
+        setFade(noteMeios, 1 - swapAmount, 0);
+        setFade(noteMendel, swapAmount, 0);
+        noteMeios.style.display = swapAmount >= 1 ? "none" : "block";
+        noteMendel.style.display = swapAmount <= 0 ? "none" : "block";
+
+        lines.forEach((line, i) => setFade(line, appear(t, B.lines + i * 130, 340), 5));
+
+        q("file-meios").classList.toggle("active", !onMendel);
+        q("file-mendel").classList.toggle("active", onMendel);
+        q("tab").textContent = onMendel ? "Mendels lagar" : "Meios";
+        q("sb-file").textContent = onMendel ? "Mendels lagar" : "Meios";
+
+        // frontmatter: the two fields the plugin actually writes
+        q("conf-meios").textContent = t >= B.rated1 ? "2" : "0";
+        q("seen-meios").textContent = t >= B.rated1 ? "2026-08-02" : "—";
+        q("conf-mendel").textContent = t >= B.rated2 ? "2" : "4";
+        q("seen-mendel").textContent = t >= B.rated2 ? "2026-08-02" : "2026-07-19";
+
+        // ---------------------------------------------------------------- palette
+        const p1 = between(t, B.palette1In, B.palette1Out, 240);
+        const p2 = between(t, B.palette2In, B.palette2Out, 240);
+        const paletteAmount = Math.max(p1, p2);
+        setCentred(palette, paletteAmount, 7);
+        if (p2 > p1) {
+          q("palette-query").textContent = "Start a study sprint";
+          q("palette-hit").textContent = "Start a study sprint";
+          q("palette-alt").textContent = "Stop the sprint";
+        } else {
+          q("palette-query").textContent = "Rate this concept";
+          q("palette-hit").textContent = "Rate this concept";
+          q("palette-alt").textContent = "What should I study now?";
+        }
+
+        // ---------------------------------------------------------------- rate modal
+        const r1 = between(t, B.rate1In, B.rate1Out, 280);
+        const r2 = between(t, B.rate2In, B.rate2Out, 280);
+        const rateAmount = Math.max(r1, r2);
+        setCentred(rateModal, rateAmount, 8);
+        const second = r2 > r1;
+        q("rate-title").textContent = second ? "Mendels lagar" : "Meios";
+
+        const hoverAt = second ? B.hover2 : B.hover1;
+        const pickAt = second ? B.pick2 : B.pick1;
+        scaleBtns.forEach((btn, i) => {
+          const value = i + 1;
+          // sf-current is the rating already on the note: only Mendels lagar has one.
+          btn.classList.toggle("sf-current", second && value === 4 && t < B.rated2);
+          btn.classList.toggle("hover", rateAmount > .5 && value === 2 && t >= hoverAt && t < pickAt);
+          btn.classList.toggle("picked", rateAmount > .5 && value === 2 && t >= pickAt);
+        });
+
+        // ---------------------------------------------------------------- cursor
+        const c1 = clamp((t - B.cursor1From) / (B.cursor1To - B.cursor1From));
+        const c2 = clamp((t - B.cursor2From) / (B.cursor2To - B.cursor2From));
+        const travel = second ? c2 : c1;
+        const cursorShown = rateAmount > .35
+          ? clamp((t - (second ? B.cursor2From : B.cursor1From) + 260) / 260)
+          : 0;
+        const e = smooth(travel);
+        const cx = CURSOR_REST.x + (CURSOR_TARGET.x - CURSOR_REST.x) * e;
+        const cy = CURSOR_REST.y + (CURSOR_TARGET.y - CURSOR_REST.y) * e - Math.sin(e * Math.PI) * 26;
+        const press = t >= pickAt && t < pickAt + 220 ? 0.86 : 1;
+        cursor.style.opacity = String(clamp(Math.min(cursorShown, rateAmount)));
+        cursor.style.transform = `translate(${cx}px, ${cy}px) scale(${press})`;
+
+        // ---------------------------------------------------------------- cards
+        const badgeAmount = between(t, B.badgeIn, B.badgeOut, 260);
+        setCentred(badgeCard, badgeAmount, 10);
+        const badgePop = back(clamp((t - B.badgeIn) / 420));
+        q("badge-big").style.transform =
+          `scale(${0.4 + 0.6 * badgePop}) rotate(${-8 * (1 - badgePop)}deg)`;
+
+        const sprintAmount = between(t, B.sprintCardIn, B.sprintCardOut, 300);
+        setCentred(sprintCard, sprintAmount, 10);
+        const sprintPop = back(clamp((t - B.sprintCardIn) / 420));
+        q("sprint-big").style.transform =
+          `scale(${0.4 + 0.6 * sprintPop}) rotate(${-8 * (1 - sprintPop)}deg)`;
+
+        const dashAmount = appear(t, B.dashIn, 340);
+        setCentred(dash, dashAmount, 10);
+
+        // one scrim behind whatever modal is up
+        const scrimAmount = Math.max(rateAmount, badgeAmount, sprintAmount, dashAmount, paletteAmount * .85);
+        scrim.style.opacity = String(clamp(scrimAmount) * .9);
+
+        // ---------------------------------------------------------------- notice
+        const n1 = between(t, B.notice1In, B.notice1Out, 280);
+        const n2 = between(t, B.notice2In, B.notice2Out, 280);
+        const n3 = between(t, B.notice3In, B.notice3Out, 280);
+        const noticeAmount = Math.max(n1, n2, n3);
+        setFade(notice, noticeAmount, 8);
+        if (n2 >= n1 && n2 >= n3) {
+          q("notice-icon").textContent = "🦉";
+          q("notice-text").textContent = "Honest downgrade. That is the rating that actually helps you.";
+          q("notice-xp").textContent = "+15 XP";
+        } else if (n3 > n1) {
+          q("notice-icon").textContent = "⏳";
+          q("notice-text").textContent = "Sprint started — 25 minutes. One concept, nothing else open.";
+          q("notice-xp").textContent = "";
+        } else {
+          q("notice-icon").textContent = "🦉";
+          q("notice-text").textContent = "Rated. Good. A low honest number is worth more than a high hopeful one.";
+          q("notice-xp").textContent = "+10 XP";
+        }
+
+        setFade(compare, between(t, B.compareIn, B.compareOut, 300), 6);
+
+        // ---------------------------------------------------------------- status bar
+        let statusText = "🦉 Egg · 0 XP";
+        let changedAt = 0;
+        if (t >= B.awarded) {
+          statusText = "🦉 Fledgling · 85 XP · 🔥4 · 🎯2/3";
+          changedAt = B.awarded;
+        } else if (t >= B.sprintStart) {
+          // The status bar is the whole sprint UI: a clock, not a bell.
+          const gone = Math.floor((t - B.sprintStart) / 1000);
+          const left = 25 * 60 - 2 - gone;
+          statusText = `⏳ ${String(Math.floor(left / 60)).padStart(2, "0")}:${String(left % 60).padStart(2, "0")} · 🦉 Fledgling`;
+          changedAt = B.sprintStart;
+        } else if (t >= B.rated2) {
+          statusText = "🦉 Egg · 25 XP · 🔥1 · 🎯0/3";
+          changedAt = B.rated2;
+        } else if (t >= B.rated1) {
+          statusText = "🦉 Egg · 10 XP · 🔥1 · 🎯0/3";
+          changedAt = B.rated1;
+        }
+        status.textContent = statusText;
+        const flash = changedAt ? 1 - clamp((t - changedAt) / 900) : 0;
+        status.style.background = `rgba(110, 88, 184, ${0.16 * flash})`;
+
+        // ---------------------------------------------------------------- caption
+        let text = "Concepts/Meios.md · <span class=\"dim\">confidence: 0 — nothing claimed yet.</span>";
+        if (t >= B.dashIn) {
+          text = "Levels measure work done. <span class=\"dim\">Whether it landed is established by explaining and being tested.</span>";
+        } else if (t >= B.sprintCardIn) {
+          text = "The sprint ends with retrieval, <span class=\"dim\">not with a bell.</span>";
+        } else if (t >= B.palette2In) {
+          text = "<span class=\"dim\">Later that week.</span> Start a study sprint — the clock lives in the status bar.";
+        } else if (t >= B.rated2) {
+          text = "Rating pays 10. Lowering pays 15. <span class=\"dim\">The honest downgrade is the best-paid move there is.</span>";
+        } else if (t >= B.swap) {
+          text = "Mendels lagar has stood at 4 since July. <span class=\"dim\">Today it goes down to 2.</span>";
+        } else if (t >= B.rated1) {
+          text = "A 2 pays exactly what a 5 pays. <span class=\"dim\">XP is for the act of studying, never for the number.</span>";
+        } else if (t >= B.palette1In) {
+          text = "Command palette → <span class=\"dim\">Rate this concept.</span>";
+        }
+        if (caption.dataset.text !== text) {
+          caption.dataset.text = text;
+          caption.innerHTML = text;
+        }
+        setFade(caption, appear(t, 200, 300), 4);
+      };
+
+      /* ------------------------------------------------------------------ transport */
+      let frozen = false;
+      let origin = performance.now();
+
+      const tick = (now) => {
+        if (frozen) return;
+        const t = (now - origin) % DURATION;
+        render(t);
+        requestAnimationFrame(tick);
+      };
+
+      // Deterministic single-moment render, for frame-by-frame capture.
+      window.__seek = (ms) => {
+        frozen = true;
+        const t = ((Number(ms) % DURATION) + DURATION) % DURATION;
+        render(t);
+        return t;
+      };
+      window.__play = () => {
+        frozen = false;
+        origin = performance.now();
+        requestAnimationFrame(tick);
+      };
+      window.__walkthroughDuration = DURATION;
+
+      const param = Number(new URLSearchParams(location.search).get("t"));
+      if (Number.isFinite(param) && location.search.includes("t=")) {
+        window.__seek(param);
+      } else {
+        render(0);
+        requestAnimationFrame(tick);
+      }
+
+      addEventListener("keydown", (event) => {
+        if (event.key.toLowerCase() === "r") window.__play();
+      });
+    })();
+  </script>
+</body>
+</html>

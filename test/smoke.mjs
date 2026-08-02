@@ -37,7 +37,9 @@ Module._load = (request, ...rest) =>
     ? { Plugin: FakePlugin, Notice: Fake, Modal: Fake, PluginSettingTab: Fake, Setting: Fake }
     : load.call(Module, request, ...rest);
 
-const StudyFamiliar = require(path.join(root, "main.js"));
+const bundle = require(path.join(root, "main.js"));
+// esbuild emits an ES default export as `.default`; Obsidian unwraps it the same way.
+const StudyFamiliar = bundle.default ?? bundle;
 
 // --- a two-note vault ------------------------------------------------------------------------
 const today = new Date().toISOString().slice(0, 10);
