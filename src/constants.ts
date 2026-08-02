@@ -73,6 +73,8 @@ export const DEFAULT_DATA: PluginData = {
   sprintLength: 25,
   settings: {
     language: "en",
+    conceptsFolder: "Concepts",
+    sourcesFolder: "Sources",
     dailyGoal: 3,
     showStatusBar: true,
     celebrate: true,

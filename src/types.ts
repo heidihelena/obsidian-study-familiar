@@ -71,6 +71,10 @@ export interface DayActions {
 
 export interface Settings {
   language: Lang;
+  /** Folder holding concept notes. Empty means "search the whole vault". */
+  conceptsFolder: string;
+  /** Folder holding source notes. Empty means "search the whole vault". */
+  sourcesFolder: string;
   dailyGoal: number;
   showStatusBar: boolean;
   celebrate: boolean;

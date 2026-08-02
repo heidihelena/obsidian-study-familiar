@@ -1,4 +1,4 @@
-import { Notice, Plugin, TFile } from "obsidian";
+import { Notice, Plugin, TFile, normalizePath } from "obsidian";
 
 import { BADGES, DEFAULT_DATA, LEVELS, STALE_DAYS, XP } from "./constants";
 import { fill, translate } from "./i18n";
@@ -81,10 +81,18 @@ export default class StudyFamiliar extends Plugin {
   }
 
   /* ---------------------------------------------------------------- vault reading */
+  /** An empty folder setting means "anywhere in the vault"; `type:` still does the real filtering. */
+  private inFolder(path: string, folder: string): boolean {
+    const wanted = folder.trim();
+    if (!wanted) return true;
+    const norm = normalizePath(wanted).replace(/\/+$/, "");
+    return path === norm || path.startsWith(`${norm}/`);
+  }
+
   concepts(): ConceptNote[] {
     return this.app.vault
       .getMarkdownFiles()
-      .filter((f) => f.path.startsWith("Concepts/"))
+      .filter((f) => this.inFolder(f.path, this.data.settings.conceptsFolder))
       .map((f) => ({ file: f, fm: (this.app.metadataCache.getFileCache(f)?.frontmatter ?? {}) as NoteFrontmatter }))
       .filter((c) => c.fm.type === "concept");
   }
@@ -163,7 +171,7 @@ export default class StudyFamiliar extends Plugin {
   unconfirmedSources(): ConceptNote[] {
     return this.app.vault
       .getMarkdownFiles()
-      .filter((f) => f.path.startsWith("Sources/"))
+      .filter((f) => this.inFolder(f.path, this.data.settings.sourcesFolder))
       .map((f) => ({ file: f, fm: (this.app.metadataCache.getFileCache(f)?.frontmatter ?? {}) as NoteFrontmatter }))
       .filter((s) => s.fm.type === "source" && String(s.fm.status ?? "").toLowerCase() !== "confirmed");
   }
@@ -380,15 +388,9 @@ export default class StudyFamiliar extends Plugin {
       return head + text;
     };
 
-    const vault = this.app.vault as typeof this.app.vault & {
-      process?: (file: TFile, fn: (data: string) => string) => Promise<string>;
-    };
-    if (typeof vault.process === "function") {
-      await vault.process(file, rewrite);
-    } else {
-      const data = await this.app.vault.read(file);
-      await this.app.vault.modify(file, rewrite(data));
-    }
+    // process() reads and writes inside the vault's own lock, so edits made while the modal was
+    // open are not clobbered. Requires Obsidian 1.6, which minAppVersion declares.
+    await this.app.vault.process(file, rewrite);
     this.notice(
       "🔗",
       fill(this.t("suggest_done"), { n: applied }) +

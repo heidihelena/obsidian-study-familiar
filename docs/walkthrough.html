@@ -435,7 +435,7 @@
 
     /* celebration cards */
     .card {
-      top: 158px;
+      top: 232px;
       width: 486px;
       padding: 26px 30px 22px;
       text-align: center;
@@ -628,8 +628,8 @@
     .xp-compare {
       position: absolute;
       z-index: 11;
-      bottom: 42px;
-      left: 288px;
+      right: 22px;
+      bottom: 40px;
       width: 268px;
       padding: 10px 12px;
       background: var(--pane);
@@ -883,7 +883,7 @@
       </div>
     </section>
 
-    <div class="caption" id="caption" aria-live="polite"></div>
+    <div class="caption" id="caption" aria-live="polite"><span id="caption-text"></span></div>
   </div>
 
   <script>
@@ -924,15 +924,17 @@
         palette2In: 14300, palette2Out: 15150,
         sprintStart: 15400,
         notice3In: 15450, notice3Out: 17500,
-        sprintEnd: 17900,
         sprintCardIn: 18000, sprintCardOut: 20500,
-        awarded: 20400,
+        // finishSprint() clears the clock and pays the XP at the same instant the
+        // card opens, so the status bar must leave sprint mode here, not later.
+        awarded: 17950,
         dashIn: 20700,
         fadeOut: 23600
       };
 
-      const stage = q("stage");
+      const windowEl = document.querySelector(".window");
       const caption = q("caption");
+      const captionText = q("caption-text");
       const scrim = q("scrim");
       const palette = q("palette");
       const rateModal = q("rate-modal");
@@ -962,15 +964,17 @@
 
       /* Cursor path: a short arc into the "2" row, so the click reads as a choice
          rather than a teleport. Coordinates are window-relative. */
-      const CURSOR_REST = { x: 690, y: 300 };
-      const CURSOR_TARGET = { x: 372, y: 351 };
+      const CURSOR_REST = { x: 700, y: 320 };
+      const CURSOR_TARGET = { x: 352, y: 258 };
 
       /* ------------------------------------------------------------------ render */
       const render = (raw) => {
         const t = clamp(raw, 0, DURATION);
 
-        // global fade, so the loop seam is a dissolve rather than a jump cut
-        stage.style.opacity = String(Math.min(appear(t, B.fadeIn, 350), 1 - smooth((t - B.fadeOut) / 400)));
+        // Loop seam: dissolve the window and caption against the paper, not the whole
+        // stage against the dark page — a fade to black reads as an error in a GIF.
+        const fade = Math.min(appear(t, B.fadeIn, 350), 1 - smooth((t - B.fadeOut) / 400));
+        windowEl.style.opacity = String(fade);
 
         // ---------------------------------------------------------------- note pane
         const onMendel = t >= B.swap;
@@ -1124,9 +1128,9 @@
         }
         if (caption.dataset.text !== text) {
           caption.dataset.text = text;
-          caption.innerHTML = text;
+          captionText.innerHTML = text;
         }
-        setFade(caption, appear(t, 200, 300), 4);
+        setFade(caption, Math.min(appear(t, 200, 300), fade), 4);
       };
 
       /* ------------------------------------------------------------------ transport */
