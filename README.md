@@ -6,7 +6,7 @@ An Obsidian study companion that rewards the act of studying and never the ratin
 
 Most study gamification has an obvious failure mode: rate everything 5, feel great, learn nothing.
 This one pays the same XP for rating a concept 2 as for rating it 5, pays **more** for lowering a
-rating than for raising one, and has a badge — Honest Owl ⚖️ — for the first downgrade. No popup
+rating than for raising one, and has a badge for the first downgrade: Honest Owl ⚖️. No popup
 ever tells you that you know something. Levels measure work done; whether the work landed is
 established elsewhere, by explaining and by being tested.
 
@@ -15,7 +15,7 @@ established elsewhere, by explaining and by being tested.
 Read this before installing. Study Familiar reads a specific note schema: concept notes carrying
 `type: concept` in their frontmatter, with `confidence`, `last_reviewed` and optionally `courses`
 and `prerequisites`; source notes carrying `type: source` and `status`. The folders are
-configurable (and can be the whole vault), but the frontmatter keys are not — in a vault that does
+configurable (and can be the whole vault), but the frontmatter keys are not. In a vault that does
 not use them, the dashboard will be empty and the plugin will do nothing.
 
 Install with [BRAT](https://github.com/TfTHacker/obsidian42-brat): add
@@ -51,12 +51,12 @@ Settings → Community plugins.
 
 1. **XP is paid for the act, never for the rating.** A 2 pays what a 5 pays. Lowering pays 15 where
    a re-rate pays 12. Enforced by the smoke test, not merely intended.
-2. **Nothing claims you know anything.** A 4 or 5 gets *"Noted — we will test that rather than take
+2. **Nothing claims you know anything.** A 4 or 5 gets *"Noted, we will test that rather than take
    your word for it."* Also enforced by the smoke test.
-3. **A broken streak is a welcome, not a scolding.** *"Streak restarts today — nothing is lost that
+3. **A broken streak is a welcome, not a scolding.** *"Streak restarts today, nothing is lost that
    matters."* Streak systems that punish absence make people abandon the tool instead of returning,
    and returning is the whole point.
-4. **It writes two frontmatter fields** — `confidence` and `last_reviewed` — plus links you
+4. **It writes two frontmatter fields**, `confidence` and `last_reviewed`, plus links you
    explicitly tick and `zotero:` when you ask. It never moves, renames or reorganises a note.
 5. **No network, no account, no telemetry.** Everything is computed from your own notes, locally.
    Progress lives in the plugin's own `data.json`, so the notes stay clean.
@@ -65,7 +65,7 @@ Settings → Community plugins.
 
 When the timer runs out the card asks: *what are the three things you could now explain without
 notes? Say them out loud, then rate one.* Those last two minutes are where a timed block becomes
-learning — a bell on its own only measures sitting. Stopping early gives no XP and no guilt.
+learning. A bell on its own only measures sitting. Stopping early gives no XP and no guilt.
 
 ## Development
 
@@ -84,7 +84,7 @@ Source layout: `src/main.ts` (plugin and commands), `src/views.ts` (modals), `sr
 `src/util.ts`, `src/types.ts`.
 
 The smoke test loads the built bundle against a stubbed Obsidian API and asserts the two honesty
-rules, sprint behaviour, atomic link writing, and manifest correctness — so a release cannot ship a
+rules, sprint behaviour, atomic link writing, and manifest correctness, so a release cannot ship a
 broken listing, or a plugin that has quietly started rewarding self-flattery.
 
 ## Licence
