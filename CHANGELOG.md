@@ -3,6 +3,32 @@
 All notable changes to Study Familiar. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versions follow [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] 2026-08-03
+
+Automated review feedback from the community-plugin scanner, all of it addressed except the one
+finding that is inherent to what the plugin does.
+
+### Changed
+
+- **Settings are declarative.** `getSettingDefinitions()` is implemented, so every setting appears
+  in Obsidian's settings search on 1.13 and later. `display()` renders the same list through the
+  classic API, so the tab still works on the versions `minAppVersion` supports: one list, two
+  renderers, no duplicated copy.
+- Frontmatter is narrowed once through a typed helper instead of being read as `any` at each call
+  site, which removed three unsafe-member-access findings and two redundant assertions.
+- `createFragment()` instead of `document.createDocumentFragment()`; `slice()` instead of the
+  deprecated `substr()`; a destructive button class instead of the deprecated `setWarning()`;
+  `setDynamicTooltip()` dropped, since sliders now show their value inline.
+- `builtin-modules` replaced with `node:module`'s own `builtinModules` in the esbuild config.
+- Removed `text-decoration-color`, which Obsidian only partially supports.
+- Release workflow publishes **build provenance attestations** for the release assets.
+
+### Not changed
+
+- **Vault enumeration.** The plugin lists all markdown files to find notes carrying `type: concept`
+  and `type: source`. That is how it knows what to study next, so it cannot be narrowed away; the
+  folder settings limit the scan, and nothing is read beyond frontmatter or sent anywhere.
+
 ## [0.1.0] 2026-08-02
 
 First release. Built for a first-year molecular biosciences vault; usable in any vault that follows

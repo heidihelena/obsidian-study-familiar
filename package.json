@@ -1,6 +1,6 @@
 {
   "name": "obsidian-study-familiar",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "An Obsidian study companion that rewards the act of studying and never the rating you give yourself.",
   "main": "main.js",
   "scripts": {
@@ -21,7 +21,6 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/node": "^20.19.43",
-    "builtin-modules": "^3.3.0",
     "esbuild": "^0.20.2",
     "obsidian": "^1.13.1",
     "tslib": "^2.6.2",

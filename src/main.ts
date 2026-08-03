@@ -81,6 +81,13 @@ export default class StudyFamiliar extends Plugin {
   }
 
   /* ---------------------------------------------------------------- vault reading */
+  /** Obsidian types `frontmatter` as `any`; narrow it once, here, instead of at every call site. */
+  private frontmatterOf(file: TFile): NoteFrontmatter {
+    const cache = this.app.metadataCache.getFileCache(file);
+    const fm: unknown = cache?.frontmatter;
+    return (fm ?? {}) as NoteFrontmatter;
+  }
+
   /** An empty folder setting means "anywhere in the vault"; `type:` still does the real filtering. */
   private inFolder(path: string, folder: string): boolean {
     const wanted = folder.trim();
@@ -93,7 +100,7 @@ export default class StudyFamiliar extends Plugin {
     return this.app.vault
       .getMarkdownFiles()
       .filter((f) => this.inFolder(f.path, this.data.settings.conceptsFolder))
-      .map((f) => ({ file: f, fm: (this.app.metadataCache.getFileCache(f)?.frontmatter ?? {}) as NoteFrontmatter }))
+      .map((f) => ({ file: f, fm: this.frontmatterOf(f) }))
       .filter((c) => c.fm.type === "concept");
   }
 
@@ -172,7 +179,7 @@ export default class StudyFamiliar extends Plugin {
     return this.app.vault
       .getMarkdownFiles()
       .filter((f) => this.inFolder(f.path, this.data.settings.sourcesFolder))
-      .map((f) => ({ file: f, fm: (this.app.metadataCache.getFileCache(f)?.frontmatter ?? {}) as NoteFrontmatter }))
+      .map((f) => ({ file: f, fm: this.frontmatterOf(f) }))
       .filter((s) => s.fm.type === "source" && String(s.fm.status ?? "").toLowerCase() !== "confirmed");
   }
 
@@ -319,7 +326,7 @@ export default class StudyFamiliar extends Plugin {
     const file = this.app.workspace.getActiveFile();
     if (!file) return;
     const raw = await this.app.vault.read(file);
-    const own = String(this.app.metadataCache.getFileCache(file)?.frontmatter?.id ?? file.basename);
+    const own = String(this.frontmatterOf(file).id ?? file.basename);
 
     const split = raw.match(/^---\n[\s\S]*?\n---\n/);
     const head = split ? split[0] : "";
@@ -346,7 +353,7 @@ export default class StudyFamiliar extends Plugin {
         candidates.push({
           id,
           title: String(c.fm.title ?? id),
-          matched: body.substr(start, hit[2].length),
+          matched: body.slice(start, start + hit[2].length),
           index: start,
           context: body.slice(from, start + hit[2].length + 45).replace(/\n/g, " ").trim(),
         });
@@ -376,7 +383,7 @@ export default class StudyFamiliar extends Plugin {
       }
       let text = data.slice(head.length);
       for (const c of ordered) {
-        const shown = text.substr(c.index, c.matched.length);
+        const shown = text.slice(c.index, c.index + c.matched.length);
         if (shown.toLowerCase() !== c.matched.toLowerCase()) {
           skipped += 1;
           continue;
@@ -401,7 +408,7 @@ export default class StudyFamiliar extends Plugin {
   async addZoteroLink(): Promise<void> {
     const file = this.app.workspace.getActiveFile();
     if (!file) return;
-    const fm = (this.app.metadataCache.getFileCache(file)?.frontmatter ?? {}) as NoteFrontmatter;
+    const fm = this.frontmatterOf(file);
     if (fm.type !== "source") {
       this.notice("🦉", this.t("zotero_notsource"));
       return;
@@ -416,7 +423,7 @@ export default class StudyFamiliar extends Plugin {
       this.notice("📚", this.t("zotero_nokey"));
       return;
     }
-    await this.app.fileManager.processFrontMatter(file, (front) => {
+    await this.app.fileManager.processFrontMatter(file, (front: NoteFrontmatter) => {
       front.zotero = `zotero://select/items/@${key}`;
     });
     this.notice("📚", this.t("zotero_added"));
@@ -492,7 +499,7 @@ export default class StudyFamiliar extends Plugin {
   async rateCurrent(): Promise<void> {
     const file = this.app.workspace.getActiveFile();
     if (!file) return;
-    const fm = (this.app.metadataCache.getFileCache(file)?.frontmatter ?? {}) as NoteFrontmatter;
+    const fm = this.frontmatterOf(file);
     if (fm.type !== "concept") {
       this.notice("🦉", this.t("not_concept"));
       return;
@@ -501,11 +508,11 @@ export default class StudyFamiliar extends Plugin {
   }
 
   async applyRating(file: TFile, value: number): Promise<void> {
-    const before = (this.app.metadataCache.getFileCache(file)?.frontmatter ?? {}) as NoteFrontmatter;
+    const before = this.frontmatterOf(file);
     const previous = typeof before.confidence === "number" ? before.confidence : 0;
     const wasReviewed = before.last_reviewed ? String(before.last_reviewed) : null;
 
-    await this.app.fileManager.processFrontMatter(file, (fm) => {
+    await this.app.fileManager.processFrontMatter(file, (fm: NoteFrontmatter) => {
       fm.confidence = value;
       fm.last_reviewed = todayISO();
     });
@@ -542,7 +549,7 @@ export default class StudyFamiliar extends Plugin {
   }
 
   async onNoteChanged(file: TFile): Promise<void> {
-    const fm = (this.app.metadataCache.getFileCache(file)?.frontmatter ?? {}) as NoteFrontmatter;
+    const fm = this.frontmatterOf(file);
     if (fm.type === "source" && String(fm.status ?? "").toLowerCase() === "confirmed") {
       if (!this.data.countedSources.includes(file.path)) {
         this.data.countedSources.push(file.path);
@@ -563,10 +570,11 @@ export default class StudyFamiliar extends Plugin {
 
   /* ---------------------------------------------------------------- chrome */
   notice(icon: string, text: string): void {
-    const frag = document.createDocumentFragment();
-    const wrap = frag.createDiv({ cls: "sf-notice" });
-    wrap.createSpan({ cls: "sf-notice-icon", text: icon });
-    wrap.createSpan({ cls: "sf-notice-text", text });
+    const frag = createFragment((el) => {
+      const wrap = el.createDiv({ cls: "sf-notice" });
+      wrap.createSpan({ cls: "sf-notice-icon", text: icon });
+      wrap.createSpan({ cls: "sf-notice-text", text });
+    });
     new Notice(frag, 6000);
   }
 
