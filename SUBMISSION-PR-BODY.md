@@ -52,6 +52,13 @@ with `status`). Folders are configurable and may be the whole vault, but the fro
 not configurable in this version. In a vault that does not use them the dashboard is empty and the
 plugin does nothing. This is stated at the top of the README rather than discovered after install.
 
+## On the vault enumeration flag
+
+The plugin calls `getMarkdownFiles()` to find notes carrying `type: concept` or `type: source`.
+Ranking what to study next is exactly a question about the whole set, so this cannot be narrowed to
+a single file. The folder settings limit the scan, only frontmatter is read, and nothing leaves the
+vault: no network calls of any kind.
+
 ## Testing note
 
 Developed and used on macOS. `isDesktopOnly` is false because nothing in the plugin requires

@@ -75,7 +75,6 @@
 .sf-quest-row.sf-done {
   color: var(--text-muted);
   text-decoration: line-through;
-  text-decoration-color: var(--background-modifier-border);
 }
 
 .sf-check {

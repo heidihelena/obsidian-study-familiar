@@ -58,7 +58,10 @@ Settings → Community plugins.
    and returning is the whole point.
 4. **It writes two frontmatter fields**, `confidence` and `last_reviewed`, plus links you
    explicitly tick and `zotero:` when you ask. It never moves, renames or reorganises a note.
-5. **No network, no account, no telemetry.** Everything is computed from your own notes, locally.
+5. **It reads every markdown file's frontmatter** to rank what to study next, since that ranking is
+   a question about the whole set. The folder settings limit the scan. Nothing but frontmatter is
+   read, and nothing leaves the vault.
+6. **No network, no account, no telemetry.** Everything is computed from your own notes, locally.
    Progress lives in the plugin's own `data.json`, so the notes stay clean.
 
 ## Sprints end with retrieval

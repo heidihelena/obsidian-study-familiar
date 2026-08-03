@@ -1,6 +1,6 @@
 import esbuild from "esbuild";
 import process from "process";
-import builtins from "builtin-modules";
+import { builtinModules } from "node:module";
 
 const banner = `/*
 Study Familiar — built from source. Do not edit main.js directly.
@@ -28,7 +28,8 @@ const context = await esbuild.context({
     "@lezer/common",
     "@lezer/highlight",
     "@lezer/lr",
-    ...builtins
+    ...builtinModules,
+    ...builtinModules.map((m) => `node:${m}`)
   ],
   format: "cjs",
   target: "es2018",
