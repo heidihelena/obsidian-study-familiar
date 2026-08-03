@@ -78,7 +78,9 @@ export class StudyFamiliarSettings extends PluginSettingTab {
             const keep = this.plugin.data.settings;
             this.plugin.data = { ...DEFAULT_DATA, settings: keep };
             await this.plugin.save();
-            this.display();
+            // update() re-renders the declarative tab on 1.13+; display() is the pre-1.13 path.
+            if (typeof this.update === "function") this.update();
+            else this.display();
           };
         },
       },
