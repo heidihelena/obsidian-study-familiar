@@ -1,4 +1,10 @@
-import { App, PluginSettingTab, Setting, SettingDefinitionItem } from "obsidian";
+import {
+  App,
+  PluginSettingTab,
+  Setting,
+  SettingDefinitionItem,
+  requireApiVersion,
+} from "obsidian";
 
 import { DEFAULT_DATA } from "./constants";
 import type StudyFamiliar from "./main";
@@ -79,7 +85,7 @@ export class StudyFamiliarSettings extends PluginSettingTab {
             this.plugin.data = { ...DEFAULT_DATA, settings: keep };
             await this.plugin.save();
             // update() re-renders the declarative tab on 1.13+; display() is the pre-1.13 path.
-            if (typeof this.update === "function") this.update();
+            if (requireApiVersion("1.13.0")) this.update();
             else this.display();
           };
         },
